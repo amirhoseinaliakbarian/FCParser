@@ -28,7 +28,7 @@ import shutil
 import yaml
 import subprocess
 from operator import add
-import faac
+from . import faac
 import math
 	
 def main(call='external',configfile=''):
@@ -64,7 +64,7 @@ def main(call='external',configfile=''):
 	write_output(config, output_data, stats['total_lines'])
 			
 
-	print "Elapsed: %s \n" %(prettyTime(time.time() - startTime))	
+	print("Elapsed: %s \n" %(prettyTime(time.time() - startTime)))	
 
 
 def parsing(config,startTime,stats):
@@ -79,8 +79,8 @@ def parsing(config,startTime,stats):
 
 		results[source] = []
 		currentTime = time.time()
-		print "\n-----------------------------------------------------------------------\n"
-		print "Elapsed: %s \n" %(prettyTime(currentTime - startTime))	
+		print("\n-----------------------------------------------------------------------\n")
+		print("Elapsed: %s \n" %(prettyTime(currentTime - startTime)))	
 
 
 		results[source] = process_multifile(config, source, stats['sizes'][source])
@@ -108,7 +108,7 @@ def process_multifile(config, source, lengths):
 			tag = getTag(input_path)
 
 			#Print some progress stats
-			print "%s  #%s / %s  %s" %(source, str(count), str(len(config['SOURCES'][source]['FILESTRAIN'])), tag)
+			print("%s  #%s / %s  %s" %(source, str(count), str(len(config['SOURCES'][source]['FILESTRAIN'])), tag))
 		
 			pool = mp.Pool(config['Cores'])
 			cont = True
@@ -179,11 +179,11 @@ def combine(instances, instances_new, perc):
 	instances_new = filter_instances(instances_new, perc)
 
 	instances['count'] += instances_new['count']
-	for variable,features in instances_new.items():
+	for variable,features in list(instances_new.items()):
 		if variable != 'count':
-			if variable in instances.keys():
+			if variable in list(instances.keys()):
 				for feature in features:
-					if feature in instances[variable].keys():
+					if feature in list(instances[variable].keys()):
 						instances[variable][feature] += instances_new[variable][feature]
 					else:
 						instances[variable][feature] = instances_new[variable][feature]
@@ -241,11 +241,11 @@ def process_log(log, config, source, instances):
 
 	instances['count'] += 1
 
-	for variable,features in record.variables.items():
+	for variable,features in list(record.variables.items()):
 		if variable != 'timestamp':
-			if variable in instances.keys():
+			if variable in list(instances.keys()):
 				for feature in features:
-					if str(feature) in instances[variable].keys():
+					if str(feature) in list(instances[variable].keys()):
 						instances[variable][str(feature)] += 1
 					else:
 						instances[variable][str(feature)] = 1
@@ -325,14 +325,14 @@ def configSummary(config):
 	Print a summary of loaded parameters
 	'''
 
-	print "-----------------------------------------------------------------------"
-	print "Data Sources:"
+	print("-----------------------------------------------------------------------")
+	print("Data Sources:")
 	for source in config['SOURCES']:
-		print " * %s %s variables " %((source).ljust(18), str(len(config['SOURCES'][source]['CONFIG']['VARIABLES'])).ljust(2))
-	print
-	print "Output:"
-	print "  Stats file: %s" %(config['OUTSTATS'])
-	print "-----------------------------------------------------------------------\n"
+		print(" * %s %s variables " %((source).ljust(18), str(len(config['SOURCES'][source]['CONFIG']['VARIABLES'])).ljust(2)))
+	print()
+	print("Output:")
+	print("  Stats file: %s" %(config['OUTSTATS']))
+	print("-----------------------------------------------------------------------\n")
 	
 
 
@@ -424,7 +424,7 @@ def getArguments():
 def filter_output(output_data,perc):
 	'''Filter de data to only common fatures
 	'''
-	for source in output_data.keys():
+	for source in list(output_data.keys()):
 		output_data[source] = filter_instances(output_data[source],perc)
 
 
@@ -435,12 +435,12 @@ def filter_instances(instances, perc):
 	'''Filter de data to only common fatures
 	'''
 	threshold = perc*instances['count']
-	for varkey in instances.keys():
+	for varkey in list(instances.keys()):
 		if varkey != 'count':
-			for feakey in instances[varkey].keys():
+			for feakey in list(instances[varkey].keys()):
 				if instances[varkey][feakey] < threshold:
 					del instances[varkey][feakey]
-			if len(instances[varkey].keys()) == 0:
+			if len(list(instances[varkey].keys())) == 0:
 				del instances[varkey]
 
 
@@ -457,13 +457,13 @@ def write_output(config, output_data, total):
 
 	yaml.add_representer(UnsortableOrderedDict, yaml.representer.SafeRepresenter.represent_dict)
 
-	for source in output_data.keys():
-		print "\nWriting configuration file " + config['SOURCES'][source]['CONFILE'] + "\n" 
-		for varkey in output_data[source].keys():
+	for source in list(output_data.keys()):
+		print("\nWriting configuration file " + config['SOURCES'][source]['CONFILE'] + "\n") 
+		for varkey in list(output_data[source].keys()):
 			if varkey != 'count':
 
-				l = OrderedDict(sorted(output_data[source][varkey].items(), key=lambda t: t[1], reverse=True))
-				for feakey in l.keys():
+				l = OrderedDict(sorted(list(output_data[source][varkey].items()), key=lambda t: t[1], reverse=True))
+				for feakey in list(l.keys()):
 
 					interm = UnsortableOrderedDict()
 					interm['name'] = source + '_' + varkey + '_' + feakey.replace(" ", "").replace("\'", "\'\'").replace("\"", "\"\"")
@@ -517,7 +517,7 @@ def write_output(config, output_data, total):
 			f.write('\n\n')
 			yaml.dump(contentf, f, default_flow_style=False)
 		except:
-	    		print "Problem writing " + yamlfile
+	    		print("Problem writing " + yamlfile)
 	    		quit()
 		finally:
 			f.close()

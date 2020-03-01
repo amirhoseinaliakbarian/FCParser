@@ -26,7 +26,7 @@ import shutil
 import yaml
 import subprocess
 from operator import add
-import faac
+from . import faac
 import math
 import copy
 from collections import OrderedDict
@@ -71,7 +71,7 @@ def main(call='external',configfile=''):
 	# Output results
 	write_output(output_data, config)
 
-	print "Elapsed: %s \n" %(prettyTime(time.time() - startTime))	
+	print("Elapsed: %s \n" %(prettyTime(time.time() - startTime)))	
 
 def online_parsing(config):
 	'''
@@ -142,8 +142,8 @@ def offline_parsing(config,startTime,stats):
 
 		results[source] = []
 		currentTime = time.time()
-		print "\n-----------------------------------------------------------------------\n"
-		print "Elapsed: %s \n" %(prettyTime(currentTime - startTime))	
+		print("\n-----------------------------------------------------------------------\n")
+		print("Elapsed: %s \n" %(prettyTime(currentTime - startTime)))	
 			
 		results[source] = process_multifile(config, source, stats['sizes'][source])
 
@@ -176,7 +176,7 @@ def process_multifile(config, source, lengths):
 			tag = getTag(input_path)
 
 			#Print some progress stats
-			print "%s  #%s / %s  %s" %(source, str(count), str(len(config['SOURCES'][source]['FILES'])), tag)	
+			print("%s  #%s / %s  %s" %(source, str(count), str(len(config['SOURCES'][source]['FILES'])), tag))	
 			pool = mp.Pool(config['Cores'])
 			cont = True
 			init = 0
@@ -206,14 +206,14 @@ def fuseObs_offline(resultado):
 	Sources Fusion in a single stream. 
 	'''
 
-	v = resultado.keys()
+	v = list(resultado.keys())
 	fused_res = resultado[v[0]]
 
 	for source in v[1:]:
 
-		arbitrary_len2 = len(next(iter(resultado[source].values())).data)
+		arbitrary_len2 = len(next(iter(list(resultado[source].values()))).data)
 		try:
-			arbitrary_len = len(next(iter(fused_res.values())).data)
+			arbitrary_len = len(next(iter(list(fused_res.values()))).data)
 		except:
 			arbitrary_len = 0
 
@@ -327,7 +327,7 @@ def add_observation(obsDict,obs,tag):
 	Adds an observation (obs) to dictionary (obsDict) in an entry (tag) 
 	'''
 	
-	if tag in obsDict.keys():
+	if tag in list(obsDict.keys()):
 		obsDict[tag].aggregate(obs)
 	else:
 		obsDict[tag] = obs
@@ -460,17 +460,17 @@ def configSummary(config):
 	Print a summary of loaded parameters
 	'''
 
-	print "-----------------------------------------------------------------------"
-	print "Data Sources:"
+	print("-----------------------------------------------------------------------")
+	print("Data Sources:")
 	for source in config['SOURCES']:
-		print " * %s %s variables   %s features" %((source).ljust(18), str(len(config['SOURCES'][source]['CONFIG']['VARIABLES'])).ljust(2), str(len(config['SOURCES'][source]['CONFIG']['FEATURES'])).ljust(3))
-	print " TOTAL %s features" %(str(sum(len(l) for l in config['FEATURES'].itervalues())))
-	print
-	print "Output:"
-	print "  Directory: %s" %(config['OUTDIR'])
-	print "  Stats file: %s" %(config['OUTSTATS'])
-	print "  Weights file: %s" %(config['OUTW'])
-	print "-----------------------------------------------------------------------\n"
+		print(" * %s %s variables   %s features" %((source).ljust(18), str(len(config['SOURCES'][source]['CONFIG']['VARIABLES'])).ljust(2), str(len(config['SOURCES'][source]['CONFIG']['FEATURES'])).ljust(3)))
+	print(" TOTAL %s features" %(str(sum(len(l) for l in config['FEATURES'].values()))))
+	print()
+	print("Output:")
+	print("  Directory: %s" %(config['OUTDIR']))
+	print("  Stats file: %s" %(config['OUTSTATS']))
+	print("  Weights file: %s" %(config['OUTW']))
+	print("-----------------------------------------------------------------------\n")
 	
 
 
@@ -606,7 +606,7 @@ def write_output(output, config):
 							tag = [tagt]
 
 							tagso =  laux[0].split(',')
-							map(str.strip,tagso)
+							list(map(str.strip,tagso))
 							for j in range(len(tagso)):
 								tag.append(tagso[j])
 
@@ -639,7 +639,7 @@ def write_output(output, config):
 
 
 		l = OrderedDict(sorted(output.items()))
-		for k in l.keys():
+		for k in list(l.keys()):
 			if isinstance(k, tuple):
 				tag = k[0]
 			else:
@@ -648,7 +648,7 @@ def write_output(output, config):
 			fname = config['OUTDIR'] + 'output-'+ tag + '.dat'
 			with open(fname, 'a') as f:
 				if isinstance(k, tuple):
-					tag2 = map(str.strip,k[1:])
+					tag2 = list(map(str.strip,k[1:]))
 					f.write(','.join(tag2)+': ')
 
 				f.write(','.join(map(str,output[k].data))+ '\n')
@@ -668,12 +668,12 @@ class obsDict_online(object):
 
 	def add(self,obs):
 		if self.obsList:
-			self.obsList = map(add, obs, self.obsList) # won't work in new code
+			self.obsList = list(map(add, obs, self.obsList)) # won't work in new code
 		else:
 			self.obsList = obs
 
 	def printt(self):
-		print self.obsList
+		print(self.obsList)
 
 
 if __name__ == "__main__":

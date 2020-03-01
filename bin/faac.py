@@ -772,7 +772,7 @@ def loadConfig(output, dataSources, parserConfig):
 			config['OUTDIR'] = config['OUTDIR'] + '/'
 	except (KeyError, TypeError):
 		config['OUTDIR'] = 'OUTPUT/'
-		print " ** Default output directory: '%s'" %(config['OUTDIR'])
+		print(" ** Default output directory: '%s'" %(config['OUTDIR']))
 
 	try:
 		shutil.rmtree(config['OUTDIR']+'/')
@@ -781,13 +781,13 @@ def loadConfig(output, dataSources, parserConfig):
 
 	if not os.path.exists(config['OUTDIR']):
 		os.mkdir(config['OUTDIR'])
-		print "** creating directory %s" %(config['OUTDIR'])
+		print("** creating directory %s" %(config['OUTDIR']))
 
 	try:
 		config['OUTSTATS'] = output['stats']
 	except (KeyError, TypeError):
 		config['OUTSTATS'] = 'stats.log'
-		print " ** Default log file: '%s'" %(config['OUTSTATS'])
+		print(" ** Default log file: '%s'" %(config['OUTSTATS']))
 	try:
 		config['OUTW'] = output['weights']
 	except (KeyError, TypeError):
@@ -804,7 +804,7 @@ def loadConfig(output, dataSources, parserConfig):
 		config['Cores'] = int(parserConfig['Processes'])
 
 	except:
-		print "**ERROR** Config file missing field: Processes"
+		print("**ERROR** Config file missing field: Processes")
 		exit(1)
 
 	try: 
@@ -919,7 +919,7 @@ def loadConfig(output, dataSources, parserConfig):
 				try:	
 					config['features'].append(feat['name'])
 				except:
-					print "FEATURES: missing config key (%s)" %(e.message)
+					print("FEATURES: missing config key (%s)" %(e.message))
 					exit(1)	
 
 				try:	

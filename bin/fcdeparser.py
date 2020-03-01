@@ -17,7 +17,7 @@ import os
 import gzip
 import yaml
 import glob
-import faac
+from . import faac
 from datetime import datetime 
 import re
 from IPy import IP
@@ -46,7 +46,7 @@ def main():
 	# iterate through features and timestams
 	if deparsInput['features']:
 		for source in dataSources:
-			print source
+			print(source)
 			count_source = 0
 			sourcepath = config['SOURCES'][source]['FILESDEP']
 			formated_timestamps = format_timestamps(deparsInput['timestamps'],config['SOURCES'][source]['CONFIG']['timestamp_format'])
@@ -62,9 +62,9 @@ def main():
 				count_unstructured += cu
 				count_totu += ct
 
-			print "\n---------------------------------------------------------------------------\n"
-			print "Elapsed: %s" %(prettyTime(time.time() - startTime))
-			print "\n---------------------------------------------------------------------------\n"
+			print("\n---------------------------------------------------------------------------\n")
+			print("Elapsed: %s" %(prettyTime(time.time() - startTime)))
+			print("\n---------------------------------------------------------------------------\n")
 
 	stats(count_structured, count_tots, count_unstructured, count_totu, config['OUTDIR'], config['OUTSTATS'], startTime)
 
@@ -74,25 +74,25 @@ def print_loadSummary(config,deparsInput,startTime):
 	'''
 	Print a summary of loaded parameters
 	'''
-	print "------------------------------------------------------------------------"
-	print "Data Sources:"
+	print("------------------------------------------------------------------------")
+	print("Data Sources:")
 	for source in config['sources_files']:
-				print "	- " + str(config['tags'][source]) + " --> Files: " + str(config['sources_files'][source]['files'])
+				print("	- " + str(config['tags'][source]) + " --> Files: " + str(config['sources_files'][source]['files']))
 
-	print "FEATURES:"
-	print " TOTAL " + (str(len(deparsInput['features']))) + " features:  \n" + str(deparsInput['features']) + "\n"
-	print "------------------------------------------------------------------------\n"
+	print("FEATURES:")
+	print(" TOTAL " + (str(len(deparsInput['features']))) + " features:  \n" + str(deparsInput['features']) + "\n")
+	print("------------------------------------------------------------------------\n")
 
-	print "TIMESTAMPS"
-	print " TOTAL " + (str(len(deparsInput['timestamps']))) + " timestamps:  \n" + str(deparsInput['timestamps']) + "\n"
-	print "------------------------------------------------------------------------\n"
+	print("TIMESTAMPS")
+	print(" TOTAL " + (str(len(deparsInput['timestamps']))) + " timestamps:  \n" + str(deparsInput['timestamps']) + "\n")
+	print("------------------------------------------------------------------------\n")
 	
-	print "Output:"
-	print "  Directory: %s" %(config['OUTDIR'])
-	print "  Stats file: %s" %(config['OUTSTATS'])
-	print "\n------------------------------------------------------------------------\n"
-	print "Elapsed: %s" %(prettyTime(time.time() - startTime))
-	print "\n------------------------------------------------------------------------\n"
+	print("Output:")
+	print("  Directory: %s" %(config['OUTDIR']))
+	print("  Stats file: %s" %(config['OUTSTATS']))
+	print("\n------------------------------------------------------------------------\n")
+	print("Elapsed: %s" %(prettyTime(time.time() - startTime)))
+	print("\n------------------------------------------------------------------------\n")
 
 def getDeparsInput(configfile,config):
 	'''
@@ -104,7 +104,7 @@ def getDeparsInput(configfile,config):
 	try:
 		input_file = open(configfile.input, 'r')
 	except IOError:
-		print "No such input file '%s'" %(configfile.input)
+		print("No such input file '%s'" %(configfile.input))
 		exit(1)
 
 	#Extract features and timestams from the input file.
@@ -140,7 +140,7 @@ def getDeparsInput(configfile,config):
 	if not (config['Time']['window'] == 1  or config['Time']['window'] == None):
 		temp = []
 		for timestamp in timestamps:
-			print timestamp
+			print(timestamp)
 			for i in range(config['Time']['window'] ):
 				t = datetime.strptime(timestamp,"%Y-%m-%d %H:%M:%S")
 				new_minute = (t.minute + i) % 60
@@ -172,14 +172,14 @@ def stru_deparsing(config,threshold, sourcepath, deparsInput, source, formated_t
 		try:
 			FEATURES[feature['name']] = feature
 		except:
-			print "Cofiguration file error: missing features"
+			print("Cofiguration file error: missing features")
 			exit(1)
 
 	for variable in config['SOURCES'][source]['CONFIG']['VARIABLES']:
 		try:
 			VARIABLES[variable['name']] = variable
 		except:
-			print "Cofiguration file error: missing vriables"
+			print("Cofiguration file error: missing vriables")
 			exit(1)
 
 
@@ -207,7 +207,7 @@ def stru_deparsing(config,threshold, sourcepath, deparsInput, source, formated_t
 					# extract amount of features that appear in each line included in timestamps analyzed.
 					feat_appear[file].append(search_features_str(line,features, FEATURES, VARIABLES))
 			except:
-			  	print "error deparsing source:" + source
+			  	print("error deparsing source:" + source)
 					
 			line = input_file.readline()
 		input_file.close()
@@ -271,12 +271,12 @@ def unstr_deparsing(config, threshold, sourcepath, deparsInput, source, formated
 		try:
 			VARIABLES[variable['name']] = variable
 		except:
-			print "Cofiguration file error: missing vriables"
+			print("Cofiguration file error: missing vriables")
 			exit(1)
 	
 	count_unstructured = 0
 	count_tot = 0
-	print OUTDIR + "output_" + source
+	print(OUTDIR + "output_" + source)
 	output_file = open(OUTDIR + "output_" + source,'w')
 
 	# while count_source < lines[source]*0.01 and (not features_needed <= 0) : 
@@ -339,7 +339,7 @@ def unstr_deparsing(config, threshold, sourcepath, deparsInput, source, formated
 		for file in feat_appear:
 			count += feat_appear[file].count(int(features_needed))
 
-		print("There are " + str(count) + " unstructured logs with more than " + str(features_needed) + " matching features...")
+		print(("There are " + str(count) + " unstructured logs with more than " + str(features_needed) + " matching features..."))
 		features_needed -= 1
 
 	# Re-read the file
@@ -389,13 +389,13 @@ def stats( count_structured, count_tots, count_unstructured, count_totu, OUTDIR,
 	Print and write stats from the deparsing process
 	'''
 
-	print "\n---------------------------------------------------------------------------"	
-	print "\nSearch finished:"
-	print "Elapsed: %s" %(prettyTime(time.time() - startTime))
+	print("\n---------------------------------------------------------------------------")	
+	print("\nSearch finished:")
+	print("Elapsed: %s" %(prettyTime(time.time() - startTime)))
 	# print "\n Nfdump queries: " + str(count_nf)
-	print " Structured logs found:  " + str(count_structured) + ' out of ' + str(count_tots) 
-	print " Unstructured logs found: " + str(count_unstructured) + ' out of ' + str(count_totu)
-	print "\n---------------------------------------------------------------------------\n"
+	print(" Structured logs found:  " + str(count_structured) + ' out of ' + str(count_tots)) 
+	print(" Unstructured logs found: " + str(count_unstructured) + ' out of ' + str(count_totu))
+	print("\n---------------------------------------------------------------------------\n")
 
 	# Write stats in stats.log file.
 	try:
@@ -407,7 +407,7 @@ def stats( count_structured, count_tots, count_unstructured, count_totu, OUTDIR,
 		stats_file.write(" Unstructured logs found: " + str(count_unstructured) + ' out of ' + str(count_totu))
 
 	except IOError as e:
-		print "Stats file error: " + e.msg()
+		print("Stats file error: " + e.msg())
 
 
 def search_features_str(line,features,FEATURES,VARIABLES):
